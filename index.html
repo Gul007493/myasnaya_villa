@@ -100,7 +100,7 @@ section{position:relative}
 @keyframes grain{0%{background-position:0 0}20%{background-position:-37px 21px}40%{background-position:44px -13px}60%{background-position:-19px -52px}80%{background-position:61px 33px}100%{background-position:0 0}}
 
 /* buttons */
-.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;font-weight:500;font-size:15px;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;transition:background .35s var(--ease),color .35s var(--ease),border-color .35s;white-space:nowrap;will-change:transform}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;font-weight:500;font-size:15px;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;transition:background .35s var(--ease),color .35s var(--ease),border-color .35s;white-space:nowrap}
 .btn--red{background:var(--red);color:#fff}
 .btn--red:hover{background:var(--red2)}
 .btn--ghost{border:1px solid rgba(239,231,220,.35)}
@@ -466,6 +466,10 @@ a.ct__v:hover{color:var(--red2)}
 .cur.is-big .cur__ring{width:96px;height:96px;margin:-48px 0 0 -48px;background:var(--red);border-color:var(--red)}
 .cur.is-big .cur__txt{opacity:1}
 .cur.is-big .cur__dot{opacity:0}
+/* на кнопках: без красного круга (сливался с красными кнопками) — только точка с обводкой */
+.cur.is-btn{mix-blend-mode:normal}
+.cur.is-btn .cur__ring{width:0;height:0;margin:0;opacity:0}
+.cur.is-btn .cur__dot{width:10px;height:10px;margin:-5px 0 0 -5px;background:#fff;box-shadow:0 0 0 2px rgba(13,11,10,.85)}
 
 /* =========================================================
    Планшет / ПК
@@ -1205,6 +1209,7 @@ function renderCutList() {
     b.addEventListener('mouseleave', () => highlightCut(null));
     li.appendChild(b); ul.appendChild(li);
   });
+  bindCursorTargets(ul);
 }
 
 /* =========================================================
@@ -1277,6 +1282,7 @@ function renderTabs() {
     b.addEventListener('click', () => { if (k === currentTab) return; currentTab = k; $$('.tab', box).forEach(x => x.setAttribute('aria-selected', String(x === b))); renderDishes(k, true); b.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); });
     box.appendChild(b);
   });
+  bindCursorTargets(box);
 }
 function renderDishes(cat, animate) {
   const box = $('#dishes'); box.textContent = '';
@@ -1401,6 +1407,7 @@ function renderReasons() {
     i.addEventListener('change', () => { reason = k; updateReceipt(); });
     l.append(i, el('span', null, t(k))); box.appendChild(l);
   });
+  bindCursorTargets(box);
 }
 function renderTimes() {
   const sel = form.elements.time, cur = sel.value; sel.textContent = '';
@@ -1508,11 +1515,19 @@ function splitManifest() {
    КУРСОР + МАГНИТНЫЕ КНОПКИ (ПК)
    ========================================================= */
 const cur = $('#cur'), curTxt = $('#curTxt');
-function setCursor(on, txt) { if (!FINE) return; cur.classList.toggle('is-big', !!on); if (txt) curTxt.textContent = txt; }
+function setCursor(on, txt) { if (!FINE) return; cur.classList.remove('is-btn'); cur.classList.toggle('is-big', !!on); if (txt) curTxt.textContent = txt; }
+function setBtnCursor(on) { if (!FINE) return; cur.classList.remove('is-big'); cur.classList.toggle('is-btn', !!on); }
+const BTN_SEL = '.btn, .shot--end, .lang button, .tab, .burger, .sheet__close, .kami__x, .lb__btn, .lb__x, .stepper button, .reasons label';
 function bindCursorTargets(root) {
   if (!FINE) return;
+  // кнопки — маленькая точка; фото/карточки — красный круг с подписью
+  $$(BTN_SEL, root).forEach(n => {
+    if (n.__curb) return; n.__curb = 1;
+    n.addEventListener('mouseenter', () => setBtnCursor(true));
+    n.addEventListener('mouseleave', () => setBtnCursor(false));
+  });
   $$('[data-cursor],[data-cursor-key]', root).forEach(n => {
-    if (n.__cur) return; n.__cur = 1;
+    if (n.__cur || n.matches(BTN_SEL)) return; n.__cur = 1;
     n.addEventListener('mouseenter', () => setCursor(true, n.dataset.cursorKey ? t(n.dataset.cursorKey) : n.dataset.cursor));
     n.addEventListener('mouseleave', () => setCursor(false));
   });
