@@ -96,8 +96,8 @@ input,select,textarea{font:inherit;color:inherit}
 section{position:relative}
 
 /* grain */
-.grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grain 1s steps(6) infinite}
-@keyframes grain{0%{background-position:0 0}20%{background-position:-37px 21px}40%{background-position:44px -13px}60%{background-position:-19px -52px}80%{background-position:61px 33px}100%{background-position:0 0}}
+/* зерно — статичная картинка: без SVG-фильтра и без постоянной перерисовки (иначе Chrome теряет слои) */
+.grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.06;background:url(images/grain.png) repeat}
 
 /* buttons */
 .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;font-weight:500;font-size:15px;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;transition:background .35s var(--ease),color .35s var(--ease),border-color .35s;white-space:nowrap}
@@ -163,11 +163,11 @@ section{position:relative}
 
 /* ---------- HERO ---------- */
 .hero{height:100vh;height:100svh;min-height:560px;overflow:hidden;display:flex;align-items:center}
-.hero__photo{position:absolute;inset:0;opacity:0;will-change:clip-path,opacity}
+.hero__photo{position:absolute;inset:0;opacity:0}
 .hero__photo img,.hero__photo video{width:100%;height:100%;object-fit:cover;object-position:50% 55%;transform:scale(1.25)}
 .hero__photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(13,11,10,.35),rgba(13,11,10,.15) 40%,rgba(13,11,10,.7))}
 .smoke{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.smoke span{position:absolute;width:70vmax;height:70vmax;border-radius:50%;background:radial-gradient(circle,rgba(239,231,220,.10),rgba(239,231,220,0) 62%);filter:blur(10px);animation:drift 18s ease-in-out infinite alternate}
+.smoke span{position:absolute;width:70vmax;height:70vmax;border-radius:50%;background:radial-gradient(circle,rgba(239,231,220,.09),rgba(239,231,220,.03) 35%,rgba(239,231,220,0) 65%);animation:drift 18s ease-in-out infinite alternate}
 .smoke span:nth-child(1){left:-25vmax;top:10%}
 .smoke span:nth-child(2){right:-30vmax;top:-20%;animation-duration:24s;animation-delay:-6s}
 .smoke span:nth-child(3){left:20%;bottom:-45vmax;animation-duration:21s;animation-delay:-11s}
@@ -176,7 +176,7 @@ section{position:relative}
 .hero__eyebrow{justify-content:center}
 .hero__eyebrow::after{content:"";width:28px;height:1px;background:var(--red)}
 .hero__tag{display:block;font-size:clamp(34px,9vw,92px);line-height:1;color:var(--red2);margin:18px 0 -.18em;position:relative;z-index:2}
-.hero__word{display:block;margin:0;font-weight:700;text-transform:uppercase;font-size:clamp(110px,min(43vw,50vh),520px);line-height:.86;letter-spacing:-.02em;padding-top:.06em;color:var(--fg);background-image:url(images/scene/hero-ribeye.jpg);background-size:cover;background-position:50% 58%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;will-change:transform;transform-origin:47% 55%}
+.hero__word{display:block;margin:0;font-weight:700;text-transform:uppercase;font-size:clamp(110px,min(43vw,50vh),520px);line-height:.86;letter-spacing:-.02em;padding-top:.06em;color:var(--fg);background-image:url(images/scene/hero-ribeye.jpg);background-size:cover;background-position:50% 58%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;transform-origin:47% 55%}
 .hero__sub{font-size:19px;color:var(--mute);margin:16px auto 0;max-width:420px}
 .hero__cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:26px}
 .hero__meta{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 22px;margin-top:28px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
@@ -308,7 +308,7 @@ section{position:relative}
 .gallery{height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding-top:var(--hdr)}
 .gallery__head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px}
 .gallery__count{white-space:nowrap;font-weight:500;font-size:14px;letter-spacing:.2em;color:var(--mute);font-variant-numeric:tabular-nums}
-.track{display:flex;gap:14px;padding:0 var(--gut);margin-top:26px;will-change:transform;width:max-content}
+.track{display:flex;gap:14px;padding:0 var(--gut);margin-top:26px;width:max-content}
 .shot{position:relative;flex:none;width:min(68vw,330px);aspect-ratio:3/4;overflow:hidden;background:var(--bg3)}
 .shot img{width:100%;height:100%;object-fit:cover;transform:scale(1.12);transition:transform 1.2s var(--ease)}
 .shot:hover img{transform:scale(1.02)}
@@ -457,17 +457,15 @@ a.ct__v:hover{color:var(--red2)}
 .lb__x svg{width:20px;height:20px}
 
 /* ---------- cursor (ПК) ---------- */
-/* инверсный курсор: виден и на светлом фото, и на тёмном фоне */
-.cur{position:fixed;left:0;top:0;z-index:300;pointer-events:none;display:none;mix-blend-mode:difference}
-.cur.is-big{mix-blend-mode:normal}
-.cur__dot{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff;transition:opacity .25s}
-.cur__ring{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:1.5px solid #fff;transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease),background .35s,border-color .35s}
+/* курсор: белый с тёмной обводкой — виден на любом фоне без mix-blend-mode (он ломал отрисовку в Chrome) */
+.cur{position:fixed;left:0;top:0;z-index:300;pointer-events:none;display:none}
+.cur__dot{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px rgba(13,11,10,.75);transition:opacity .25s}
+.cur__ring{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(13,11,10,.45),inset 0 0 0 1px rgba(13,11,10,.45);transition:width .35s var(--ease),height .35s var(--ease),margin .35s var(--ease),background .35s,border-color .35s}
 .cur__txt{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap;color:#fff;opacity:0;transition:opacity .25s}
 .cur.is-big .cur__ring{width:96px;height:96px;margin:-48px 0 0 -48px;background:var(--red);border-color:var(--red)}
 .cur.is-big .cur__txt{opacity:1}
 .cur.is-big .cur__dot{opacity:0}
 /* на кнопках: без красного круга (сливался с красными кнопками) — только точка с обводкой */
-.cur.is-btn{mix-blend-mode:normal}
 .cur.is-btn .cur__ring{width:0;height:0;margin:0;opacity:0}
 .cur.is-btn .cur__dot{width:10px;height:10px;margin:-5px 0 0 -5px;background:#fff;box-shadow:0 0 0 2px rgba(13,11,10,.85)}
 
@@ -1546,7 +1544,16 @@ function initCursor() {
   }, { passive: true });
   document.addEventListener('mouseleave', () => { cur.style.opacity = '0'; });
   document.addEventListener('mouseenter', () => { if (seen) cur.style.opacity = '1'; });
-  (function loop() { rx += (mx - rx) * .18; ry += (my - ry) * .18; ring.style.transform = `translate(${rx}px,${ry}px)`; curTxt.style.left = rx + 'px'; curTxt.style.top = ry + 'px'; requestAnimationFrame(loop); })();
+  // кольцо догоняет мышь; когда догнало — кадры не пишем (меньше нагрузки на отрисовку)
+  (function loop() {
+    const dx = mx - rx, dy = my - ry;
+    if (Math.abs(dx) > .1 || Math.abs(dy) > .1) {
+      rx += dx * .18; ry += dy * .18;
+      const tr = `translate(${rx.toFixed(1)}px,${ry.toFixed(1)}px)`;
+      ring.style.transform = tr; curTxt.style.transform = tr + ' translate(-50%,-50%)';
+    }
+    requestAnimationFrame(loop);
+  })();
   bindCursorTargets(document);
   // магнитные кнопки
   $$('.magnet').forEach(b => {
